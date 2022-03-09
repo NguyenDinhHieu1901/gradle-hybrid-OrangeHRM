@@ -2,6 +2,7 @@ package commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,7 @@ public class BaseTest {
 			driver = new EdgeDriver();
 			break;
 		case IE:
-//			WebDriverManager.iedriver().arch32().setup();
+			// WebDriverManager.iedriver().arch32().setup();
 			System.setProperty("webdriver.ie.driver", GlobalConstants.PROJECT_PATH + File.separator + "driverBrowsers" + File.separator + "IEDriverServer.exe");
 			driver = new InternetExplorerDriver();
 			break;
@@ -85,6 +86,61 @@ public class BaseTest {
 		driver.manage().timeouts().implicitlyWait(GlobalConstants.LONG_TIMEOUT, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
 		driver.get(getBrowserEnvironment("TESTING"));
+		return driver;
+	}
+
+	protected WebDriver getBrowserDriver(String browserName, String environmentUrl) {
+		BrowserList browserList = BrowserList.valueOf(browserName.toUpperCase());
+
+		switch (browserList) {
+		case FIREFOX:
+			WebDriverManager.firefoxdriver().setup();
+			driver = new FirefoxDriver();
+			break;
+		case CHROME:
+			WebDriverManager.chromedriver().setup();
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.setExperimentalOption("useAutomationExtension", false);
+			chromeOptions.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+			driver = new ChromeDriver(chromeOptions);
+			break;
+		case EDGE:
+			WebDriverManager.edgedriver().setup();
+			driver = new EdgeDriver();
+			break;
+		case IE:
+			// WebDriverManager.iedriver().arch32().setup();
+			System.setProperty("webdriver.ie.driver", GlobalConstants.PROJECT_PATH + File.separator + "driverBrowsers" + File.separator + "IEDriverServer.exe");
+			driver = new InternetExplorerDriver();
+			break;
+		case SAFARI:
+			driver = new SafariDriver();
+			break;
+		case OPERA:
+			WebDriverManager.operadriver().setup();
+			driver = new OperaDriver();
+			break;
+		case COCCOC:
+			WebDriverManager.chromedriver().driverVersion("95.0.4638.69").setup();
+			ChromeOptions options = new ChromeOptions();
+			options.setBinary("C:\\Program Files\\CocCoc\\Browser\\Application\\browser.exe");
+			driver = new ChromeDriver(options);
+			break;
+		case BRAVE:
+			WebDriverManager.chromedriver().driverVersion("96.0.4664.45").setup();
+			ChromeOptions option = new ChromeOptions();
+			option.setBinary("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe");
+			driver = new ChromeDriver(option);
+			driver = new FirefoxDriver();
+			break;
+
+		default:
+			throw new RuntimeException("Browser is not supported!");
+		}
+
+		driver.manage().timeouts().implicitlyWait(GlobalConstants.LONG_TIMEOUT, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		driver.get(environmentUrl);
 		return driver;
 	}
 
